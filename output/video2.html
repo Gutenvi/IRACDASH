@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Video 2 - IRAC DASH</title>
+  <style>
+            video {
+                width: 640px;
+                height: 360px;
+            }
+        </style>
+        <link rel="stylesheet" href="/style.css">
+        
+<script src="http://smoothiecharts.org/smoothie.js"></script>
+<script type="text/javascript">
+
+	document.addEventListener("DOMContentLoaded", function () {
+        console.log("DENTRO");
+        init();
+    });
+    var t = 0;
+    var bitrate;
+    var bufferLevel;
+    var num;
+    
+    function init(){
+        console.log("init");
+        var video, player;
+        mpd_url = "./stream2.mpd";
+        video = document.querySelector("video");
+        player = dashjs.MediaPlayer().create();
+        player.initialize(video, mpd_url, true);
+        player.on(dashjs.MediaPlayer.events["PLAYBACK_ENDED"], function() {
+            clearInterval(eventPoller);
+        });
+        var eventPoller = setInterval(function() {
+            var streamInfo = player.getActiveStream().getStreamInfo();
+            var dashMetrics = player.getDashMetrics();
+            var dashAdapter = player.getDashAdapter();
+            if (dashMetrics && streamInfo) {
+                const periodIdx = streamInfo.index;
+                var repSwitch = dashMetrics.getCurrentRepresentationSwitch('video', true);
+                num = repSwitch.to.substr(repSwitch.to.length - 1);
+                bufferLevel = dashMetrics.getCurrentBufferLevel('video', true);
+                bitrate = repSwitch ? Math.round(dashAdapter.
+                getBandwidthForRepresentation(repSwitch.to, periodIdx) / 1000) : 0;
+                document.getElementById('buffer').innerText = bufferLevel + " secs";
+                document.getElementById('bitrate').innerText = bitrate + " Kbps";				
+                document.getElementById('representation').innerText = repSwitch.to;
+                }
+        }, 500);
+    }
+
+
+      // Randomly add a data point every 500ms
+      var random = new TimeSeries();
+      var random1= new TimeSeries();
+      var random2 = new TimeSeries();
+      setInterval(function() {
+        random.append(new Date().getTime(), bitrate);
+        random1.append(new Date().getTime(), bufferLevel);
+        random2.append(new Date().getTime(), num);
+      }, 500);
+      
+      function createTimeline() {
+        var chart = new SmoothieChart({maxValueScale:1.1,minValueScale:0});
+        chart.addTimeSeries(random, { strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 4 });
+        chart.streamTo(document.getElementById("chart"), 500);
+        
+        var chart1 = new SmoothieChart({maxValueScale:1.1,minValueScale:0});
+        chart1.addTimeSeries(random1, { strokeStyle: 'rgba(255, 0, 0, 1)', fillStyle: 'rgba(255, 0, 0, 0.2)', lineWidth: 4 });
+        chart1.streamTo(document.getElementById("chart1"), 500);
+        
+        var chart2 = new SmoothieChart({maxValueScale:1.1,minValueScale:0});
+        chart2.addTimeSeries(random2, { strokeStyle: 'rgba(0, 0, 255, 1)', fillStyle: 'rgba(0, 0, 255, 0.2)', lineWidth: 4 });
+        chart2.streamTo(document.getElementById("chart2"), 500);
+      }
+    
+
+</script>
+   </head>
+
+<body onload="createTimeline()">
+	<h1>Marvel Theory: Was Cap Always Worthy?</h1>
+<div class="code">
+<video class="dashjs-player" autoplay controls preload="auto" muted>
+</video>
+</div>
+<div class="code">
+    <p>Video Bitrate: <span id="bitrate"></span></p>
+    <p>Video Buffer: <span id="buffer"></span></p>
+    <p>Video Representation: <span id="representation"></span></p>
+    <p>Bitrate (Kbps) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Buffer level (s)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Segment number</p>
+<canvas id="chart" width="400" height="100">
+<div class="smoothie-chart-tooltip" style="position: absolute; display: none; top: 146px; left: 319px;"></div>
+</canvas>
+
+<canvas id="chart1" width="400" height="100">
+
+<div class="smoothie-chart-tooltip" style="position: absolute; display: none; top: 146px; left: 319px;"></div>
+</canvas>
+
+<canvas id="chart2" width="400" height="100">
+
+<div class="smoothie-chart-tooltip" style="position: absolute; display: none; top: 146px; left: 319px;"></div>
+</canvas>
+
+</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/3.1.0/dash.all.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js"></script>
+
+  </body>
+
+</html>

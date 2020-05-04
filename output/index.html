@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Log in - IRAC DASH</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+
+
+<body>
+  <div class="main">
+    <p class="sign" align="center">Sign in</p>
+    <form class="form1">
+      <input class="un" type="text" align="center" id="user" placeholder="Username">
+      <input class="pass" type="password" align="center" id="pass" placeholder="Password">
+      <a class="submit" align="center" onClick="Login()">Sign in</a>
+            
+                
+</div>
+     
+</body>
+
+<script language="JavaScript"> 
+function Login(){ 
+var usuario=document.getElementById("user").value; 
+var password=document.getElementById("pass").value; 
+if (usuario=="Pilar" && password=="Pilar") { 
+window.location="select.html"; 
+} 
+if (usuario=="Alvaro" && password=="Alvaro") { 
+window.location="select.html"; 
+} 
+if (usuario=="" || password=="") { 
+alert("Tienes que introducir todos los datos");
+} 
+} 
+        </script> 
+</center> 
+<script language="Javascript"> 
+<!-- Begin 
+document.oncontextmenu = function(){return false} 
+// End --> 
+</script>
+</body>
+</html>
